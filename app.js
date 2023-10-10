@@ -16,7 +16,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.disable("x-powered-by"); // For security
 app.use(cors({ origin: true, credentials: true }));
 
-mongoose.set("strictQuery", true);
 const DATABASE_URL = process.env.DATABASE_URL;
 const DB_OPTIONS = {
   dbName: "project-gadget-db",
