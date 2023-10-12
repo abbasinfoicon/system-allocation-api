@@ -9,6 +9,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const NewUser = require('../models/NewUser');
 const authCheck = require('../middelware/authCheck');
+const Emp = require('../models/Emp');
 const config = process.env;
 
 router.get('/', (req, res, next) => {
@@ -16,9 +17,9 @@ router.get('/', (req, res, next) => {
 });
 // API route to Add a user
 router.post('/addUser', (req, res) => {
-  try {
-    const { userName, email, phoneNumber } = req.body;
 
+  try {
+    const { userName, email, phoneNumber, password } = req.body;
     // Validate user input (e.g., check for required fields)
 
     // Create a new user object using the user schema
@@ -26,6 +27,7 @@ router.post('/addUser', (req, res) => {
       name: userName,
       email,
       phoneNumber,
+      password,
     };
 
     // Push the new user object into the 'users' array
@@ -41,16 +43,55 @@ router.post('/addUser', (req, res) => {
 // Define a route to fetch user options
 router.get('/getUsers', async (req, res) => {
   try {
-    const users = await NewUser.find({}, 'name'); // Fetch all user names
+    const users = await NewUser.find(); // Fetch all user names
 
     // Extract only the user names and create an array
-    const userNames = users.map((user) => user.name);
+    // const userNames = users.map((user) => user);
 
     // Respond with the user names as JSON
-    res.status(200).json({ users: userNames });
+    res.status(200).json({ users });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to fetch user options' });
+  }
+});
+
+// API route to Add a Employee
+router.post('/addEmp', (req, res) => {
+
+  try {
+    const { userName, email, phoneNumber } = req.body;
+    // Validate user input (e.g., check for required fields)
+
+    // Create a new user object using the user schema
+    const newEmp = {
+      name: userName,
+      email,
+      phoneNumber,
+    };
+
+    // Push the new Employee object into the 'users' array
+    Emp.create(newEmp);
+
+    res.status(201).json({ message: 'Employee added successfully' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to save Employee' });
+  }
+});
+
+// Define a route to fetch employee options
+router.get('/getEmps', async (req, res) => {
+  try {
+    const employee = await Emp.find({}); // Fetch all employee names
+    // Extract only the employee names and create an array
+    ///const empNames = employee.map((employee) => employee.name);
+
+    // Respond with the employee names as JSON
+    return res.status(200).json({ employee });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to fetch employee options' });
   }
 });
 
@@ -79,8 +120,6 @@ router.put('/updateHistory/:id', async (req, res) => {
   try {
     const { UserName, startDate, endDate } = req.body;
     const id = req.params.id;
-    console.log('Received _id:', id)
-    console.log('Received formData:', req.body);
 
     // Find the asset by its _id and use $elemMatch to match the element in empHistory
     const result = await Asset.findByIdAndUpdate(
@@ -147,8 +186,6 @@ router.post('/saveAsset', async (req, res) => {
   try {
     const assetData = req.body;
 
-    console.log(req.body)
-
     const { SerialNumber, RAM, HDD, Processor, OS, Office, LanNo, AssetType } = assetData;
 
     if (SerialNumber && RAM && HDD && Processor && OS && Office && LanNo && AssetType) {
@@ -188,7 +225,6 @@ router.get('/getsystemuser/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch asset data.' });
   }
 });
-
 
 // Login Route
 router.post('/login', async (req, res, next) => {
@@ -237,4 +273,6 @@ router.get('/logout', (req, res) => {
   req.logout();
   res.redirect('/');
 });
+
+
 module.exports = router;

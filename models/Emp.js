@@ -3,13 +3,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const empSchema = new Schema({
     name: String,
     email: String,
     phoneNumber: String,
-    password: String,
 });
   
   
-  module.exports =mongoose.model('NewUser', userSchema);
+  module.exports =mongoose.model('addemp', empSchema);
   
